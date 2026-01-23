@@ -1,0 +1,94 @@
+title: Agentic Click Review
+type: community
+group: Agentic AI
+order: 1
+image: /static/templates/agentic-click-review.png
+details: |
+  <h1>Review AI Agent Click Actions on Websites</h1>
+  <p>Review and validate click actions performed by AI agents on web interfaces.
+  Evaluate whether the agent clicked on the correct element to achieve its goal.</p>
+  <h3>Task Fields:</h3>
+  <ul>
+    <li><b>screenshot</b>: URL to the webpage screenshot</li>
+    <li><b>agent_task</b>: The task the agent was trying to accomplish</li>
+    <li><b>target_element</b>: Description of the element the agent intended to click</li>
+    <li><b>click_x</b>: X coordinate of the agent's click (percentage)</li>
+    <li><b>click_y</b>: Y coordinate of the agent's click (percentage)</li>
+  </ul>
+config: |
+  <View>
+    <Style>
+      .container {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .task-info {
+        background: #f5f5f5;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 8px;
+      }
+      .review-section {
+        background: #fff;
+        padding: 16px;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+      }
+      .label-header {
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 4px;
+      }
+    </Style>
+
+    <View className="container">
+      <!-- Task Information -->
+      <View className="task-info">
+        <Header value="Agent Task"/>
+        <Text name="task" value="$agent_task" />
+
+        <Header value="Target Element"/>
+        <Text name="target" value="$target_element" />
+      </View>
+
+      <!-- Screenshot with Click Location -->
+      <Header value="Screenshot with Agent Click Location"/>
+      <View style="position: relative;">
+        <Image name="screenshot" value="$screenshot" zoom="true" zoomControl="true"/>
+
+        <KeyPointLabels name="clicks" toName="screenshot">
+          <Label value="Agent Click" background="#FF6B6B"/>
+          <Label value="Correct Click" background="#4ECDC4"/>
+        </KeyPointLabels>
+      </View>
+
+      <!-- Review Decision -->
+      <View className="review-section">
+        <Header value="Click Evaluation"/>
+        <Choices name="decision" toName="screenshot" choice="single" required="true">
+          <Choice value="Correct" hint="The agent clicked on the right element"/>
+          <Choice value="Incorrect" hint="The agent clicked on the wrong element"/>
+          <Choice value="Partially Correct" hint="Close but not optimal"/>
+          <Choice value="Unable to Determine" hint="Cannot assess from screenshot"/>
+        </Choices>
+
+        <Header value="Click Accuracy"/>
+        <Rating name="accuracy" toName="screenshot" maxRating="5" icon="star" size="medium"/>
+
+        <Header value="Error Category (if incorrect)"/>
+        <Choices name="error_type" toName="screenshot" choice="single" required="false">
+          <Choice value="Wrong Element"/>
+          <Choice value="Element Not Visible"/>
+          <Choice value="Timing Issue"/>
+          <Choice value="Misidentified Element"/>
+          <Choice value="Page Not Loaded"/>
+          <Choice value="Other"/>
+        </Choices>
+
+        <Header value="Additional Comments"/>
+        <TextArea name="comments" toName="screenshot" rows="3" maxSubmissions="1"
+                  placeholder="Explain your evaluation or suggest improvements..."/>
+      </View>
+    </View>
+  </View>

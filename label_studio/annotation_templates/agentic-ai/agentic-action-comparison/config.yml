@@ -1,0 +1,117 @@
+title: Agent Action Comparison
+type: community
+group: Agentic AI
+order: 3
+image: /static/templates/agentic-action-comparison.png
+details: |
+  <h1>Compare Agent Action to Ground Truth</h1>
+  <p>Side-by-side comparison of an AI agent's action versus the expected/correct action.
+  Useful for training data generation and agent evaluation.</p>
+  <h3>Task Fields:</h3>
+  <ul>
+    <li><b>screenshot</b>: URL to the webpage screenshot</li>
+    <li><b>instruction</b>: The instruction given to the agent</li>
+    <li><b>agent_action</b>: Description of what the agent did</li>
+    <li><b>expected_action</b>: Description of the expected/correct action</li>
+    <li><b>agent_element</b>: Element the agent interacted with</li>
+    <li><b>expected_element</b>: Element that should have been interacted with</li>
+  </ul>
+config: |
+  <View>
+    <Style>
+      .comparison-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 20px;
+      }
+      .agent-side {
+        background: #fff3e0;
+        padding: 16px;
+        border-radius: 8px;
+        border-left: 4px solid #FF9800;
+      }
+      .expected-side {
+        background: #e8f5e9;
+        padding: 16px;
+        border-radius: 8px;
+        border-left: 4px solid #4CAF50;
+      }
+      .instruction-box {
+        background: #e3f2fd;
+        padding: 16px;
+        border-radius: 8px;
+        margin-bottom: 16px;
+      }
+      .evaluation-box {
+        background: #fafafa;
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid #e0e0e0;
+      }
+    </Style>
+
+    <View>
+      <!-- Instruction -->
+      <View className="instruction-box">
+        <Header value="Instruction Given to Agent"/>
+        <Text name="instruction" value="$instruction"/>
+      </View>
+
+      <!-- Screenshot with markings -->
+      <Header value="Screenshot (mark both actions)"/>
+      <Image name="screenshot" value="$screenshot" zoom="true" zoomControl="true"/>
+      <KeyPointLabels name="action_points" toName="screenshot">
+        <Label value="Agent Action" background="#FF9800"/>
+        <Label value="Expected Action" background="#4CAF50"/>
+      </KeyPointLabels>
+
+      <!-- Side by side comparison -->
+      <View className="comparison-grid">
+        <View className="agent-side">
+          <Header value="Agent's Action"/>
+          <Text name="agent_action" value="$agent_action"/>
+          <Header value="Element Clicked"/>
+          <Text name="agent_element" value="$agent_element"/>
+        </View>
+
+        <View className="expected-side">
+          <Header value="Expected Action"/>
+          <Text name="expected_action" value="$expected_action"/>
+          <Header value="Expected Element"/>
+          <Text name="expected_element" value="$expected_element"/>
+        </View>
+      </View>
+
+      <!-- Evaluation -->
+      <View className="evaluation-box">
+        <Header value="Action Match"/>
+        <Choices name="match" toName="screenshot" choice="single" required="true">
+          <Choice value="Exact Match"/>
+          <Choice value="Equivalent Action"/>
+          <Choice value="Partial Match"/>
+          <Choice value="No Match"/>
+          <Choice value="Agent Action Better"/>
+          <Choice value="Expected Action Unclear"/>
+        </Choices>
+
+        <Header value="Semantic Similarity Score"/>
+        <Rating name="similarity" toName="screenshot" maxRating="5" icon="star" size="medium"/>
+
+        <Header value="Error Analysis (if mismatch)"/>
+        <Choices name="error_reason" toName="screenshot" choice="multiple" required="false">
+          <Choice value="Visual Similarity Confusion"/>
+          <Choice value="Text Interpretation Error"/>
+          <Choice value="Context Misunderstanding"/>
+          <Choice value="Element Ordering Issue"/>
+          <Choice value="Hidden/Overlapping Element"/>
+          <Choice value="Dynamic Content"/>
+          <Choice value="Ambiguous Instruction"/>
+        </Choices>
+
+        <Header value="Notes"/>
+        <TextArea name="notes" toName="screenshot" rows="3" maxSubmissions="1"
+                  placeholder="Additional observations about the comparison..."/>
+      </View>
+    </View>
+  </View>

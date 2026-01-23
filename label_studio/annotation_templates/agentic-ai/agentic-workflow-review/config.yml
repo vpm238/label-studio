@@ -1,0 +1,110 @@
+title: Agentic Workflow Review
+type: community
+group: Agentic AI
+order: 2
+image: /static/templates/agentic-workflow-review.png
+details: |
+  <h1>Review AI Agent Workflow Sequences</h1>
+  <p>Review complete multi-step workflows performed by AI agents on websites.
+  Evaluate the sequence of actions taken to accomplish a task.</p>
+  <h3>Task Fields:</h3>
+  <ul>
+    <li><b>workflow_goal</b>: The overall goal the agent was trying to achieve</li>
+    <li><b>screenshots</b>: URL to video or animated sequence of screenshots</li>
+    <li><b>action_log</b>: JSON or text log of actions taken</li>
+    <li><b>final_screenshot</b>: Screenshot of the final state</li>
+  </ul>
+config: |
+  <View>
+    <Style>
+      .workflow-container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      .goal-section {
+        background: #e8f4fd;
+        padding: 16px;
+        border-radius: 8px;
+        border-left: 4px solid #2196F3;
+      }
+      .action-section {
+        background: #f9f9f9;
+        padding: 16px;
+        border-radius: 8px;
+      }
+      .review-panel {
+        background: #fff;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+      }
+    </Style>
+
+    <View className="workflow-container">
+      <!-- Workflow Goal -->
+      <View className="goal-section">
+        <Header value="Workflow Goal"/>
+        <Text name="goal" value="$workflow_goal"/>
+      </View>
+
+      <!-- Action Sequence -->
+      <View className="action-section">
+        <Header value="Action Sequence"/>
+        <Text name="actions" value="$action_log"/>
+      </View>
+
+      <!-- Screenshots Review -->
+      <Header value="Workflow Screenshots"/>
+      <Image name="screenshots" value="$screenshots" zoom="true" zoomControl="true"/>
+
+      <!-- Mark important clicks in final state -->
+      <Header value="Final State (mark any issues)"/>
+      <Image name="final_state" value="$final_screenshot" zoom="true"/>
+      <RectangleLabels name="issues" toName="final_state">
+        <Label value="Error State" background="#FF5252"/>
+        <Label value="Unexpected Result" background="#FF9800"/>
+        <Label value="Success Indicator" background="#4CAF50"/>
+      </RectangleLabels>
+
+      <!-- Review Panel -->
+      <View className="review-panel">
+        <Header value="Workflow Outcome"/>
+        <Choices name="outcome" toName="final_state" choice="single" required="true">
+          <Choice value="Goal Achieved" hint="The agent successfully completed the task"/>
+          <Choice value="Partial Success" hint="Some steps completed but goal not fully achieved"/>
+          <Choice value="Failed" hint="The agent failed to achieve the goal"/>
+          <Choice value="Error/Crash" hint="The workflow encountered an error"/>
+        </Choices>
+
+        <Header value="Workflow Efficiency"/>
+        <Rating name="efficiency" toName="final_state" maxRating="5" icon="star" size="medium"/>
+
+        <Header value="Issue Categories (select all that apply)"/>
+        <Choices name="issues_found" toName="final_state" choice="multiple" required="false">
+          <Choice value="Unnecessary Steps"/>
+          <Choice value="Missed Shortcut"/>
+          <Choice value="Wrong Element Selected"/>
+          <Choice value="Navigation Error"/>
+          <Choice value="Form Fill Error"/>
+          <Choice value="Timing/Wait Issue"/>
+          <Choice value="Authentication Problem"/>
+          <Choice value="Dynamic Content Issue"/>
+        </Choices>
+
+        <Header value="Suggested Improvements"/>
+        <TextArea name="improvements" toName="final_state" rows="4" maxSubmissions="1"
+                  placeholder="How could the agent have done this better?"/>
+
+        <Header value="Would a Human Do It Differently?"/>
+        <Choices name="human_approach" toName="final_state" choice="single">
+          <Choice value="Same Approach"/>
+          <Choice value="Slightly Different"/>
+          <Choice value="Very Different"/>
+        </Choices>
+
+        <TextArea name="human_alternative" toName="final_state" rows="2" maxSubmissions="1"
+                  placeholder="Describe how a human would approach this task..."/>
+      </View>
+    </View>
+  </View>
